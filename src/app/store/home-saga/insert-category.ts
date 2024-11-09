@@ -23,7 +23,7 @@ const addCategory = async (cate: any): Promise<any> => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function* addCategorySaga(action: any): Generator<any, void, any> {
   try {
-    const rs = yield call(addCategory, action?.payload?.cate);
+    const rs = yield call(addCategory, action?.payload?.category);
     if (rs?.status === 200) {
       yield put(getCateListHanlder());
       action?.payload?.callback();

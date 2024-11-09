@@ -10,20 +10,26 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AddCategoryDto } from '../model';
-import { addCateHanlder } from '../store/reducers';
+import { UpdateCategoryDto } from '../model';
+import { updateCateHanlder } from '../store/reducers';
 
-const AddCategory = () => {
+const UpdateCategory = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
+  // Lấy tham số từ URcL
+  const searchParams = useSearchParams();
+  const category = searchParams.get('category');
+  console.log('111---,', category);
+
+  const querycategory = category ? JSON.parse(category) : {};
 
   const [categoryData, setCategoryData] = useState({
-    name: '',
-    description: '',
+    name: querycategory?.name,
+    description: querycategory?.image,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,12 +42,13 @@ const AddCategory = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: AddCategoryDto = {
+    const payload: UpdateCategoryDto = {
+      id: querycategory?.id,
       name: categoryData.name,
       image: categoryData.description,
     };
     dispatch(
-      addCateHanlder({
+      updateCateHanlder({
         category: payload,
         callback: () => {
           setIsOpen(true);
@@ -100,7 +107,7 @@ const AddCategory = () => {
           fullWidth
           sx={{ mt: 2 }}
         >
-          Thêm danh mục
+          Cập nhật danh mục
         </Button>
       </form>
       <Snackbar
@@ -110,11 +117,11 @@ const AddCategory = () => {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={() => setIsOpen(false)} severity="success">
-          {'Thêm thành công'}
+          {'Cập nhật thành công'}
         </Alert>
       </Snackbar>
     </Box>
   );
 };
 
-export default AddCategory;
+export default UpdateCategory;

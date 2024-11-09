@@ -2,14 +2,14 @@
 
 import axios from 'axios';
 import { call, put } from 'redux-saga/effects';
-import { getCateListHanlder } from '../reducers';
+import { fetchListUserRequest } from '../reducers';
 
-const updateCategory = async (category: any): Promise<any> => {
+const updateCustomer = async (customer: any): Promise<any> => {
   const token = localStorage.getItem('token');
   const response = await axios.put(
-    `http://127.0.0.1:3002/products/categories/update`,
+    `http://127.0.0.1:3001/users/update`,
     {
-      ...category,
+      ...customer,
     },
     {
       headers: {
@@ -21,14 +21,14 @@ const updateCategory = async (category: any): Promise<any> => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function* updateCategorySaga(action: any): Generator<any, void, any> {
+function* updateCustomerSaga(action: any): Generator<any, void, any> {
   try {
-    const rs = yield call(updateCategory, action?.payload?.category);
+    const rs = yield call(updateCustomer, action?.payload?.customer);
     if (rs?.status === 200) {
-      yield put(getCateListHanlder());
+      yield put(fetchListUserRequest());
       action?.payload?.callback();
     }
   } catch (error) {}
 }
 
-export default updateCategorySaga;
+export default updateCustomerSaga;

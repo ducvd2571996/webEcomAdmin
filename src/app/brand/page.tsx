@@ -17,6 +17,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBrandsHanlder } from '../products/store/reducers/get-brands';
 import { RootState } from '../store/store';
+import { deleteBrandHanlder } from '../store/reducers';
+import { UpdateBrandDto } from '../model/brand.model';
 
 const brandsData = [
   {
@@ -43,14 +45,18 @@ const BrandPage = () => {
     dispatch(getBrandsHanlder()); // Dispatch to fetch brands
   }, [dispatch, brands.length]);
 
-  const handleEdit = (id: number) => {
-    console.log('Edit brand with id:', id);
-    // Add your edit logic here
+  const handleEdit = (brand: UpdateBrandDto) => {
+    const query = new URLSearchParams({
+      brand: JSON.stringify({
+        ...brand,
+      }),
+    }).toString();
+
+    router.push(`/update-brand?${query}`);
   };
 
   const handleDelete = (id: number) => {
-    console.log('Delete brand with id:', id);
-    // Add your delete logic here
+    dispatch(deleteBrandHanlder({ brandId: id }));
   };
 
   return (
@@ -60,8 +66,12 @@ const BrandPage = () => {
       </Typography>
       <Box display="flex" justifyContent="space-between" mb={2}>
         <Box />
-        <Button variant="contained" color="primary">
-          Thêm thương hiệu mới
+        <Button
+          onClick={() => router.push('/add-brand')}
+          variant="contained"
+          color="primary"
+        >
+          Thêm thương hiệu
         </Button>
       </Box>
       <Table>
@@ -82,7 +92,13 @@ const BrandPage = () => {
               <TableCell align="center">
                 <IconButton
                   color="primary"
-                  onClick={() => handleEdit(brand.id)}
+                  onClick={() =>
+                    handleEdit({
+                      id: brand?.id,
+                      name: brand?.name,
+                      image: brand?.image,
+                    })
+                  }
                 >
                   <EditIcon />
                 </IconButton>

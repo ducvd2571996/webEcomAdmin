@@ -13,22 +13,22 @@ import {
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AddCategoryDto } from '../model';
-import { addCateHanlder } from '../store/reducers';
+import { AddBrandDto } from '../model/brand.model';
+import { addBrandHanlder } from '../store/reducers';
 
-const AddCategory = () => {
+const AddBrand = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
 
-  const [categoryData, setCategoryData] = useState({
+  const [brandData, setBrandData] = useState({
     name: '',
     description: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setCategoryData((prevData) => ({
+    setBrandData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -36,13 +36,13 @@ const AddCategory = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: AddCategoryDto = {
-      name: categoryData.name,
-      image: categoryData.description,
+    const payload: AddBrandDto = {
+      name: brandData.name,
+      image: brandData.description,
     };
     dispatch(
-      addCateHanlder({
-        category: payload,
+      addBrandHanlder({
+        brand: payload,
         callback: () => {
           setIsOpen(true);
         },
@@ -68,7 +68,7 @@ const AddCategory = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h5" ml={2}>
-          Thêm mới danh mục sản phẩm
+          Thêm mới thương hiệu sản phẩm
         </Typography>
         <Box width={10}></Box>
       </Box>
@@ -78,7 +78,7 @@ const AddCategory = () => {
           fullWidth
           label="Tên sản danh mục"
           name="name"
-          value={categoryData.name}
+          value={brandData.name}
           onChange={handleInputChange}
           margin="normal"
           required
@@ -88,7 +88,7 @@ const AddCategory = () => {
           fullWidth
           label="Mô tả"
           name="description"
-          value={categoryData.description}
+          value={brandData.description}
           onChange={handleInputChange}
           margin="normal"
           required
@@ -100,7 +100,7 @@ const AddCategory = () => {
           fullWidth
           sx={{ mt: 2 }}
         >
-          Thêm danh mục
+          Thêm thương hiệu sản phẩm
         </Button>
       </form>
       <Snackbar
@@ -117,4 +117,4 @@ const AddCategory = () => {
   );
 };
 
-export default AddCategory;
+export default AddBrand;

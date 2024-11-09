@@ -24,7 +24,7 @@ const Sidebar = () => {
         bgcolor: '#1E2753',
         marginTop: -1,
         marginLeft: -1,
-        height: '100vh',
+        minHeight: '100vh',
       }}
     >
       <List>
@@ -59,7 +59,12 @@ const Sidebar = () => {
           <ListItemText sx={{ color: 'white' }} primary="Đơn hàng" />
         </ListItem>
         <Divider sx={{ backgroundColor: 'white' }} />
-        <ListItem>
+        <ListItem
+          onClick={() => {
+            localStorage.removeItem('token');
+            router.push('/login');
+          }}
+        >
           <ListItemIcon>
             <InboxIcon sx={{ color: 'white' }} />
           </ListItemIcon>

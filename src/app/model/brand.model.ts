@@ -4,3 +4,14 @@ export interface Brand {
   image: string;
   productCount: number;
 }
+
+export interface AddBrandDto {
+  name: string;
+  image: string;
+}
+
+export interface UpdateBrandDto {
+  id: number;
+  name: string;
+  image: string;
+}

@@ -18,14 +18,10 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AddProductDto, UpdateProductDto } from '../model';
-import {
-  addProductHanlder,
-  getCateListHanlder,
-  updateProductHanlder,
-} from '../store/reducers';
-import { RootState } from '../store/store';
+import { UpdateProductDto } from '../model';
 import { getBrandsHanlder } from '../products/store/reducers/get-brands';
+import { getCateListHanlder, updateProductHanlder } from '../store/reducers';
+import { RootState } from '../store/store';
 
 const UpdateProduct = () => {
   const router = useRouter();

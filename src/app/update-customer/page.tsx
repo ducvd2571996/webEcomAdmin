@@ -10,20 +10,26 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AddCategoryDto } from '../model';
-import { addCateHanlder } from '../store/reducers';
+import { UpdateCustomerDto } from '../model/user.model';
+import { updateCateHanlder, updateUserHandler } from '../store/reducers';
 
-const AddCategory = () => {
+const UpdateCustomer = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
+  // Lấy tham số từ URcL
+  const searchParams = useSearchParams();
+  const customer = searchParams.get('customer');
+  const queryCustomer = customer ? JSON.parse(customer) : {};
 
-  const [categoryData, setCategoryData] = useState({
-    name: '',
-    description: '',
+  const [customerData, setCategoryData] = useState({
+    name: queryCustomer?.name,
+    address: queryCustomer?.address,
+    phoneNumber: queryCustomer?.phoneNumber,
+    email: queryCustomer?.phoneNumber,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,13 +42,13 @@ const AddCategory = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: AddCategoryDto = {
-      name: categoryData.name,
-      image: categoryData.description,
+    const payload: UpdateCustomerDto = {
+      id: queryCustomer?.id,
+      ...customerData,
     };
     dispatch(
-      addCateHanlder({
-        category: payload,
+      updateUserHandler({
+        customer: payload,
         callback: () => {
           setIsOpen(true);
         },
@@ -76,9 +82,9 @@ const AddCategory = () => {
       <form onSubmit={handleSubmit} style={{ maxWidth: 600 }}>
         <TextField
           fullWidth
-          label="Tên sản danh mục"
+          label="Tên"
           name="name"
-          value={categoryData.name}
+          value={customerData.name}
           onChange={handleInputChange}
           margin="normal"
           required
@@ -86,9 +92,29 @@ const AddCategory = () => {
 
         <TextField
           fullWidth
-          label="Mô tả"
-          name="description"
-          value={categoryData.description}
+          label="Số điện thoại"
+          name="phoneNumber"
+          value={customerData.phoneNumber}
+          onChange={handleInputChange}
+          margin="normal"
+          required
+        />
+
+        <TextField
+          fullWidth
+          label="Email"
+          name="email"
+          value={customerData.email}
+          onChange={handleInputChange}
+          margin="normal"
+          required
+        />
+
+        <TextField
+          fullWidth
+          label="Địa chỉ"
+          name="address"
+          value={customerData.address}
           onChange={handleInputChange}
           margin="normal"
           required
@@ -100,7 +126,7 @@ const AddCategory = () => {
           fullWidth
           sx={{ mt: 2 }}
         >
-          Thêm danh mục
+          Cập nhật
         </Button>
       </form>
       <Snackbar
@@ -110,11 +136,11 @@ const AddCategory = () => {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={() => setIsOpen(false)} severity="success">
-          {'Thêm thành công'}
+          {'Cập nhật thành công'}
         </Alert>
       </Snackbar>
     </Box>
   );
 };
 
-export default AddCategory;
+export default UpdateCustomer;

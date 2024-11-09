@@ -14,6 +14,7 @@ import {
   updateBrandHanlder,
   updateCateHanlder,
   updateProductHanlder,
+  updateUserHandler,
 } from '../reducers';
 import getCateListSaga from './get-cate-list';
 import getLatestProductsSaga from './get-latest-products';
@@ -27,6 +28,7 @@ import addBrandSaga from './insert-brand';
 import updateBrandSaga from './update-brand';
 import deleteBrandSaga from './delete-brand';
 import fetchListUserSaga from './get-list-customer';
+import updateCustomerSaga from './update-customer';
 
 export default function* userSaga() {
   yield takeLatest(fetchUserRequest.type, fetchUserSaga);
@@ -42,4 +44,5 @@ export default function* userSaga() {
   yield takeLatest(updateBrandHanlder.type, updateBrandSaga);
   yield takeLatest(deleteBrandHanlder.type, deleteBrandSaga);
   yield takeLatest(fetchListUserRequest.type, fetchListUserSaga);
+  yield takeLatest(updateUserHandler.type, updateCustomerSaga);
 }

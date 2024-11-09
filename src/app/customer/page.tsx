@@ -1,65 +1,40 @@
 // pages/customers.tsx
 'use client';
-import { useEffect, useState } from 'react';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
+  IconButton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  IconButton,
   Typography,
-  Button,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import moment from 'moment';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { CustomerData, UpdateCustomerDto } from '../model/user.model';
 import { fetchListUserRequest } from '../store/reducers';
 import { RootState } from '../store/store';
-import { CustomerData } from '../model/user.model';
-import moment from 'moment';
-
-interface Customer {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  createdAt: string;
-}
-
-const customersData: Customer[] = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '123-456-7890',
-    address: '123 Main St, Springfield',
-    createdAt: '2024-11-01',
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    phone: '987-654-3210',
-    address: '456 Elm St, Metropolis',
-    createdAt: '2024-11-02',
-  },
-  // Add more sample customers here...
-];
 
 const CustomerList = () => {
   const dispatch = useDispatch();
-
+  const router = useRouter();
   const customerList = useSelector((state: RootState) => state.user.customers);
   useEffect(() => {
     dispatch(fetchListUserRequest());
   }, []);
 
-  const handleEdit = (customerId: number) => {
-    // Add edit functionality here, like navigating to an edit form
-    console.log('Edit customer with ID:', customerId);
+  const handleEdit = (customer: UpdateCustomerDto) => {
+    const query = new URLSearchParams({
+      customer: JSON.stringify({
+        ...customer,
+      }),
+    }).toString();
+
+    router.push(`/update-customer?${query}`);
   };
 
   return (
@@ -90,7 +65,15 @@ const CustomerList = () => {
               </TableCell>
               <TableCell align="center">
                 <IconButton
-                  onClick={() => handleEdit(customer.id)}
+                  onClick={() =>
+                    handleEdit({
+                      id: customer?.id,
+                      name: customer?.name,
+                      address: customer?.address,
+                      email: customer?.email,
+                      phoneNumber: customer?.phoneNumber,
+                    })
+                  }
                   color="primary"
                 >
                   <EditIcon />

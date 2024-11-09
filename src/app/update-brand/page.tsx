@@ -10,20 +10,26 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AddCategoryDto } from '../model';
-import { addCateHanlder } from '../store/reducers';
+import { UpdateBrandDto } from '../model/brand.model';
+import { updateBrandHanlder, updateCateHanlder } from '../store/reducers';
 
-const AddCategory = () => {
+const UpdateBrand = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
+  // Lấy tham số từ URcL
+  const searchParams = useSearchParams();
+  const brand = searchParams.get('brand');
+  console.log('111---,', brand);
 
-  const [categoryData, setCategoryData] = useState({
-    name: '',
-    description: '',
+  const queryBrand = brand ? JSON.parse(brand) : {};
+
+  const [brandData, setCategoryData] = useState({
+    name: queryBrand?.name,
+    description: queryBrand?.image,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,13 +42,14 @@ const AddCategory = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: AddCategoryDto = {
-      name: categoryData.name,
-      image: categoryData.description,
+    const payload: UpdateBrandDto = {
+      id: queryBrand?.id,
+      name: brandData.name,
+      image: brandData.description,
     };
     dispatch(
-      addCateHanlder({
-        category: payload,
+      updateBrandHanlder({
+        brand: payload,
         callback: () => {
           setIsOpen(true);
         },
@@ -78,7 +85,7 @@ const AddCategory = () => {
           fullWidth
           label="Tên sản danh mục"
           name="name"
-          value={categoryData.name}
+          value={brandData.name}
           onChange={handleInputChange}
           margin="normal"
           required
@@ -88,7 +95,7 @@ const AddCategory = () => {
           fullWidth
           label="Mô tả"
           name="description"
-          value={categoryData.description}
+          value={brandData.description}
           onChange={handleInputChange}
           margin="normal"
           required
@@ -100,7 +107,7 @@ const AddCategory = () => {
           fullWidth
           sx={{ mt: 2 }}
         >
-          Thêm danh mục
+          Cập nhật danh mục
         </Button>
       </form>
       <Snackbar
@@ -110,11 +117,11 @@ const AddCategory = () => {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={() => setIsOpen(false)} severity="success">
-          {'Thêm thành công'}
+          {'Cập nhật thành công'}
         </Alert>
       </Snackbar>
     </Box>
   );
 };
 
-export default AddCategory;
+export default UpdateBrand;

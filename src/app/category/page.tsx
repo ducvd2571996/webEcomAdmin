@@ -15,8 +15,8 @@ import {
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Category } from '../model';
-import { getCateListHanlder } from '../store/reducers';
+import { Category, UpdateCategoryDto } from '../model';
+import { deleteCateHanlder, getCateListHanlder } from '../store/reducers';
 import { RootState } from '../store/store';
 
 const ManageCategories = () => {
@@ -28,14 +28,19 @@ const ManageCategories = () => {
     dispatch(getCateListHanlder()); // Dispatch to fetch categories
   }, [dispatch, cateList.length]);
 
-  const handleEdit = (id: number) => {
-    console.log('Edit category with id:', id);
-    // Add your edit logic here
+  const handleEdit = (category: UpdateCategoryDto) => {
+    const query = new URLSearchParams({
+      category: JSON.stringify({
+        ...category,
+      }),
+    }).toString();
+    console.log('aaaaa11', category);
+
+    router.push(`/update-category?${query}`);
   };
 
   const handleDelete = (id: number) => {
-    console.log('Delete category with id:', id);
-    // Add your delete logic here
+    dispatch(deleteCateHanlder({ categoryId: id }));
   };
 
   return (
@@ -45,8 +50,12 @@ const ManageCategories = () => {
       </Typography>
       <Box display="flex" justifyContent="space-between" mb={2}>
         <Box />
-        <Button variant="contained" color="primary">
-          Thêm danh mục mới
+        <Button
+          onClick={() => router.push('add-category')}
+          variant="contained"
+          color="primary"
+        >
+          Thêm danh mục
         </Button>
       </Box>
       <Table>
@@ -67,7 +76,13 @@ const ManageCategories = () => {
               <TableCell align="center">
                 <IconButton
                   color="primary"
-                  onClick={() => handleEdit(category.id)}
+                  onClick={() =>
+                    handleEdit({
+                      id: category?.id,
+                      name: category?.name,
+                      image: category?.image,
+                    })
+                  }
                 >
                   <EditIcon />
                 </IconButton>

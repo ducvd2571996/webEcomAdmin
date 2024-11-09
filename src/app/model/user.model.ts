@@ -25,3 +25,11 @@ export interface CustomerData {
   id: number;
   createdAt: Date;
 }
+
+export interface UpdateCustomerDto {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  id: number;
+}

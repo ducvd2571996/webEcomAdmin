@@ -6,7 +6,7 @@ import { call, put } from 'redux-saga/effects';
 const deleteBrand = async (brandId: any): Promise<any> => {
   const token = localStorage.getItem('token');
   const response = await axios.delete(
-    `http://127.0.0.1:3002/products/brands/${brandId}`,
+    `http://127.0.0.1:3002/products/brands/delete/${brandId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`, // Pass the token in the Authorization header

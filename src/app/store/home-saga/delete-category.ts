@@ -6,7 +6,7 @@ import { getCateListHanlder } from '../reducers';
 const deleteCategory = async (categoryId: any): Promise<any> => {
   const token = localStorage.getItem('token');
   const response = await axios.delete(
-    `http://127.0.0.1:3002/products/categories/${categoryId}`,
+    `http://127.0.0.1:3002/products/categories/delete/${categoryId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`, // Pass the token in the Authorization header

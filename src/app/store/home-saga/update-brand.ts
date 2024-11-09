@@ -7,7 +7,7 @@ import { call, put } from 'redux-saga/effects';
 const updateBrand = async (brand: any): Promise<any> => {
   const token = localStorage.getItem('token');
   const response = await axios.put(
-    `http://127.0.0.1:3002/product/brands/update`,
+    `http://127.0.0.1:3002/products/brands/update`,
     {
       ...brand,
     },

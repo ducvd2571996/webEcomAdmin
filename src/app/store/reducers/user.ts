@@ -30,6 +30,11 @@ const userSlice = createSlice({
     fetchListUserFailure: (state) => {
       state.loading = false;
     },
+    updateUserHandler: (state, action) => {
+      console.log('action', action?.payload);
+
+      state.loading = false;
+    },
   },
 });
 
@@ -40,5 +45,6 @@ export const {
   fetchListUserRequest,
   fetchListUserSuccess,
   fetchListUserFailure,
+  updateUserHandler,
 } = userSlice.actions;
 export default userSlice.reducer;
