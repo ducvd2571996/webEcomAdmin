@@ -10,7 +10,6 @@ const fetchUserData = async (userId: string): Promise<any> => {
       Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
     },
   });
-  console.log('resss', response);
 
   return response.data;
 };

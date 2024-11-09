@@ -15,3 +15,13 @@ export interface UserData {
   url: string;
   phoneNumber: string;
 }
+
+export interface CustomerData {
+  name: string;
+  email: string;
+  url: string;
+  phoneNumber: string;
+  address: string;
+  id: number;
+  createdAt: Date;
+}

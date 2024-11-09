@@ -1,44 +1,25 @@
 'use client';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Button,
   IconButton,
-  InputAdornment,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  TextField,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store/store';
-import SearchIcon from '@mui/icons-material/Search';
 import { useRouter } from 'next/navigation';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Category } from '../model';
 import { getCateListHanlder } from '../store/reducers';
-
-const categoriesData = [
-  {
-    id: 1,
-    name: 'Hoodies',
-    description: 'Comfortable and stylish hoodies for all seasons.',
-    productCount: '96 products',
-  },
-  {
-    id: 2,
-    name: 'T-Shirts',
-    description: 'Casual and fashionable t-shirts for every occasion.',
-    productCount: '56 products',
-  },
-  // Add more categories here...
-];
+import { RootState } from '../store/store';
 
 const ManageCategories = () => {
-  const [categories, setCategories] = useState(categoriesData);
   const dispatch = useDispatch();
   const { cateList } = useSelector((state: RootState) => state.cateList); // Assuming you have a category state
   const router = useRouter();
@@ -72,17 +53,17 @@ const ManageCategories = () => {
         <TableHead>
           <TableRow>
             <TableCell>Tên danh mục</TableCell>
+            <TableCell>Số lượng sản phẩm</TableCell>
             <TableCell>Mô tả</TableCell>
-            <TableCell>Sản phẩm</TableCell>
             <TableCell align="center">Sửa / Xoá</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {categories.map((category) => (
+          {cateList?.map?.((category: Category) => (
             <TableRow key={category.id}>
               <TableCell>{category.name}</TableCell>
-              <TableCell>{category.description}</TableCell>
               <TableCell>{category.productCount}</TableCell>
+              <TableCell>{category.image}</TableCell>
               <TableCell align="center">
                 <IconButton
                   color="primary"

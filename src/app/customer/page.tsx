@@ -1,6 +1,6 @@
 // pages/customers.tsx
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Table,
@@ -14,6 +14,11 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchListUserRequest } from '../store/reducers';
+import { RootState } from '../store/store';
+import { CustomerData } from '../model/user.model';
+import moment from 'moment';
 
 interface Customer {
   id: number;
@@ -45,19 +50,16 @@ const customersData: Customer[] = [
 ];
 
 const CustomerList = () => {
-  const [customers, setCustomers] = useState(customersData);
+  const dispatch = useDispatch();
+
+  const customerList = useSelector((state: RootState) => state.user.customers);
+  useEffect(() => {
+    dispatch(fetchListUserRequest());
+  }, []);
 
   const handleEdit = (customerId: number) => {
     // Add edit functionality here, like navigating to an edit form
     console.log('Edit customer with ID:', customerId);
-  };
-
-  const handleDelete = (customerId: number) => {
-    // Handle delete functionality here
-    setCustomers((prevCustomers) =>
-      prevCustomers.filter((customer) => customer.id !== customerId)
-    );
-    console.log('Deleted customer with ID:', customerId);
   };
 
   return (
@@ -77,25 +79,21 @@ const CustomerList = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {customers.map((customer) => (
+          {customerList.map((customer: CustomerData) => (
             <TableRow key={customer.id}>
               <TableCell>{customer.name}</TableCell>
               <TableCell>{customer.email}</TableCell>
-              <TableCell>{customer.phone}</TableCell>
+              <TableCell>{customer.phoneNumber}</TableCell>
               <TableCell>{customer.address}</TableCell>
-              <TableCell>{customer.createdAt}</TableCell>
+              <TableCell>
+                {moment(customer.createdAt).format('DD-MM-YYYY')}
+              </TableCell>
               <TableCell align="center">
                 <IconButton
                   onClick={() => handleEdit(customer.id)}
                   color="primary"
                 >
                   <EditIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => handleDelete(customer.id)}
-                  color="error"
-                >
-                  <DeleteIcon />
                 </IconButton>
               </TableCell>
             </TableRow>

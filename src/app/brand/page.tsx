@@ -1,4 +1,6 @@
 'use client';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Button,
@@ -8,18 +10,13 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  TextField,
-  InputAdornment,
   Typography,
 } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store/store';
-import SearchIcon from '@mui/icons-material/Search';
-import { useRouter } from 'next/navigation';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { getBrandsHanlder } from '../products/store/reducers/get-brands';
+import { RootState } from '../store/store';
 
 const brandsData = [
   {
@@ -37,8 +34,7 @@ const brandsData = [
   // Add more brands here...
 ];
 
-const ManageBrands = () => {
-  const [brandList, setBrands] = useState(brandsData);
+const BrandPage = () => {
   const dispatch = useDispatch();
   const { brands } = useSelector((state: RootState) => state.brands); // Assuming you have a brand state
   const router = useRouter();
@@ -78,11 +74,11 @@ const ManageBrands = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {brandList.map((brand) => (
+          {brands.map((brand) => (
             <TableRow key={brand.id}>
               <TableCell>{brand.name}</TableCell>
               <TableCell>{brand.productCount}</TableCell>
-              <TableCell>{brand.description}</TableCell>
+              <TableCell>{brand.image}</TableCell>
               <TableCell align="center">
                 <IconButton
                   color="primary"
@@ -105,4 +101,4 @@ const ManageBrands = () => {
   );
 };
 
-export default ManageBrands;
+export default BrandPage;

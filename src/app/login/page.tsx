@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'; // This makes the component a Client Component
+import { isValidPassword, isValidPhone } from '@/helper/verifyInput';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
   Alert,
   Box,
   Button,
   Checkbox,
-  Divider,
   IconButton,
   InputAdornment,
   Snackbar,
@@ -13,22 +14,23 @@ import {
   Typography,
 } from '@mui/material';
 import Image from 'next/image';
-import LoginBanner from '../public/asset/images/login_banner.png';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import LoginBanner from '../public/asset/images/login_banner.png';
 import { RootState } from '../store/store';
 import { loginHanlder } from './store/reducers/login';
-import { isValidPassword, isValidPhone } from '@/helper/verifyInput';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
 export default function LoginPage() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
-  const [isLoginSuccess, setLoginSuccess] = useState(false);
-  const { loading } = useSelector((state: RootState) => state.register);
+  const [isLoginFailure, setLoginFailure] = useState(false);
+  const { loading } = useSelector((state: RootState) => state.login);
+  const [errorMessage, setErrorMessage] = useState(
+    'Tài khoản đăng nhập không đúng. Vui lòng kiểm tra lại!'
+  );
 
   const dispatch = useDispatch();
 
@@ -53,18 +55,22 @@ export default function LoginPage() {
     dispatch(
       loginHanlder({
         user: { phone: phoneNumber, password: password },
-        callback: (res: { status: number }) => {
+        callback: (res: { status: number; data: any }) => {
           if (res?.status === 200) {
-            router.push('/');
+            if (res?.data?.userInfo?.role === 'admin') {
+              router.push('/');
+            } else {
+              setLoginFailure(true);
+              setErrorMessage('Vui lòng đăng nhập với tài khoản admin');
+            }
+          } else {
+            setLoginFailure(true);
           }
         },
       })
     );
   };
   const router = useRouter();
-  const gotoRegister = () => {
-    router.push('/register');
-  };
 
   return (
     <Box
@@ -81,12 +87,10 @@ export default function LoginPage() {
         objectFit="cover"
         quality={100}
         style={{
-          width: '70%', // Make the image width responsive
-          height: '100%', // Maintain aspect ratio
+          width: '70%',
+          height: '100%',
         }}
       />
-
-      {/* Right Login Form */}
       <Box
         sx={{
           width: '30%',
@@ -174,48 +178,14 @@ export default function LoginPage() {
         >
           {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
         </Button>
-
-        <Divider>Hoặc</Divider>
-
-        <Typography variant="body2" mt={2}>
-          Bạn chưa có tài khoản?{' '}
-          <Typography
-            onClick={gotoRegister}
-            component="a"
-            color="primary"
-            href="#"
-            fontWeight="bold"
-          >
-            Đăng ký
-          </Typography>
-        </Typography>
-  {/* admin login */}
-        <Typography
-  variant="body2"
-  color="primary"
-  sx={{
-    textDecoration: 'underline',
-    cursor: 'pointer',
-    mt: 2,
-    '&:hover': {
-      color: 'darkblue', // Màu hover
-    },
-  }}
-  onClick={() => {
-    // Thực hiện logic đăng nhập admin
-  }}
->
-  Đăng nhập với tư cách quản trị viên
-</Typography>
-
         <Snackbar
-          open={isLoginSuccess}
+          open={isLoginFailure}
           autoHideDuration={2000}
-          onClose={() => setLoginSuccess(false)}
+          onClose={() => setLoginFailure(false)}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Alert onClose={() => setLoginSuccess(false)} severity="error">
-            Tài khoản đăng nhập không đúng. Vui lòng kiểm tra lại!
+          <Alert onClose={() => setLoginFailure(false)} severity="error">
+            {errorMessage}
           </Alert>
         </Snackbar>
       </Box>

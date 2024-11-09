@@ -4,6 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Button,
+  CardMedia,
   IconButton,
   InputAdornment,
   Table,
@@ -20,47 +21,54 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useRouter } from 'next/navigation';
 import { RootState } from './store/store';
 import { getProductListHanlder } from './products/store/reducers/get-product';
-
-const productsData = [
-  {
-    id: 1,
-    name: 'Men Grey Hoodie',
-    category: 'Hoodies',
-    inventory: '96 in stock',
-    color: 'Black',
-    price: '$49.90',
-    rating: '5.0 (32 Votes)',
-  },
-  {
-    id: 2,
-    name: 'Women Striped T-Shirt',
-    category: 'T-Shirt',
-    inventory: '56 in stock',
-    color: 'White',
-    price: '$34.90',
-    rating: '4.8 (24 Votes)',
-  },
-  // Add more sample products here...
-];
+import { formatPrice } from '@/helper/formatString/format-price';
+import { Product } from './model';
+import { deleteProductHanlder } from './store/reducers';
 
 const Home = () => {
-  const [products, setProducts] = useState(productsData);
+  const [products, setProducts] = useState<Product[]>([]);
   const dispatch = useDispatch();
   const { productList } = useSelector((state: RootState) => state.productList);
+  const [searchValue, setSearch] = useState('');
   const router = useRouter();
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('./login');
+    }
+    console.log(token);
+  });
+  useEffect(() => {
     dispatch(getProductListHanlder({}));
-  }, [dispatch, productList.length]);
+  }, [dispatch]);
+
+  useEffect(() => {
+    setProducts(productList); // Set products to the latest productList on update
+  }, [productList]);
   console.log(productList);
 
-  const handleEdit = (id: number) => {
-    console.log('Edit product with id:', id);
-    // Add your edit logic here
+  const handleEdit = (product: Product) => {
+    const query = new URLSearchParams({
+      product: JSON.stringify({
+        product,
+      }),
+    }).toString();
+    console.log('aaaaa11', product);
+
+    router.push(`/update-product?${query}`);
   };
 
-  const handleDelete = (id: number) => {
-    console.log('Delete product with id:', id);
-    // Add your delete logic here
+  const handleSearch = (searchTxt: string) => {
+    const filtered = productList?.filter(
+      (product) =>
+        product?.name?.toLowerCase?.()?.includes(searchTxt.toLowerCase()) // Adjust `product.name` as needed
+    );
+    setProducts(filtered);
+    setSearch(searchTxt);
+  };
+
+  const handleDelete = (productId: number) => {
+    dispatch(deleteProductHanlder({ productId }));
   };
 
   return (
@@ -69,6 +77,8 @@ const Home = () => {
         <TextField
           variant="outlined"
           placeholder="Tìm kiếm..."
+          onChange={(e) => handleSearch(e.target.value)}
+          value={searchValue}
           size="small" // Makes the input smaller
           sx={{ width: 300 }} // Adjust width as needed
           InputProps={{
@@ -90,8 +100,9 @@ const Home = () => {
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell>{''}</TableCell>
             <TableCell>Tên sản phẩm</TableCell>
-            <TableCell>Giá</TableCell>
+            <TableCell>{'Giá (VND)'}</TableCell>
             <TableCell>Khuyến mãi</TableCell>
             <TableCell>Màu sắc</TableCell>
             <TableCell>Đánh giá</TableCell>
@@ -99,23 +110,33 @@ const Home = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {products.map((product) => (
-            <TableRow key={product.id}>
-              <TableCell>{product.name}</TableCell>
-              <TableCell>{product.inventory}</TableCell>
-              <TableCell>{product.color}</TableCell>
-              <TableCell>{product.price}</TableCell>
-              <TableCell>{product.rating}</TableCell>
+          {products?.map((product) => (
+            <TableRow key={product?.productId}>
+              <TableCell>
+                <CardMedia
+                  component="img"
+                  sx={{
+                    width: '100px',
+                    height: '100px',
+                    objectFit: 'contain',
+                    marginRight: 2,
+                  }}
+                  image={product?.image}
+                  alt={product?.name}
+                />
+              </TableCell>
+              <TableCell>{product?.name}</TableCell>
+              <TableCell>{formatPrice(product?.price)}</TableCell>
+              <TableCell>{product?.discount}</TableCell>
+              <TableCell>{product?.discount ? 'Blue' : 'White'}</TableCell>
+              <TableCell>{product?.tax}</TableCell>
               <TableCell align="center">
-                <IconButton
-                  color="primary"
-                  onClick={() => handleEdit(product.id)}
-                >
+                <IconButton color="primary" onClick={() => handleEdit(product)}>
                   <EditIcon />
                 </IconButton>
                 <IconButton
                   color="error"
-                  onClick={() => handleDelete(product.id)}
+                  onClick={() => handleDelete(product?.productId)}
                 >
                   <DeleteIcon />
                 </IconButton>

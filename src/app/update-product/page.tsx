@@ -1,54 +1,131 @@
 // pages/add-product.tsx
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
+  Alert,
   Box,
   Button,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Snackbar,
   TextField,
   Typography,
-  IconButton,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { SelectChangeEvent } from '@mui/material';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AddProductDto, UpdateProductDto } from '../model';
+import {
+  addProductHanlder,
+  getCateListHanlder,
+  updateProductHanlder,
+} from '../store/reducers';
+import { RootState } from '../store/store';
+import { getBrandsHanlder } from '../products/store/reducers/get-brands';
 
-const categories = ['Hoodies', 'T-Shirt', 'Shoes', 'Accessories']; // Define category options
-
-const UpdateProductPage = () => {
+const UpdateProduct = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const categories = useSelector((state: RootState) => state.cateList.cateList);
+  const brands = useSelector((state: RootState) => state.brands.brands);
+  const [isOpen, setIsOpen] = useState(false);
+  const searchParams = useSearchParams();
+  // Lấy tham số từ URL
+  const product = searchParams.get('product');
+  console.log('111---,', product);
+
+  const queryProduct = product ? JSON.parse(product) : {};
+  const parsedProduct = queryProduct?.product;
   const [productData, setProductData] = useState({
-    name: '',
-    category: '',
-    inventory: '',
-    color: '',
-    price: '',
-    rating: '',
+    name: parsedProduct?.name || '',
+    categoryId: parsedProduct?.categoryId || 0,
+    brand: parsedProduct?.brand || 0,
+    image: parsedProduct?.image || '',
+    description: parsedProduct?.description || '',
+    price: parsedProduct?.price || 0,
+    discount: parsedProduct?.discount || 0,
   });
+
+  useEffect(() => {
+    dispatch(getCateListHanlder());
+  }, [brands?.length]);
+
+  useEffect(() => {
+    dispatch(getBrandsHanlder());
+  }, [categories?.length]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProductData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+
+    if (name === 'categoryId' || name === 'brand') {
+      const selectedValue = parseInt(value, 10); // Convert to number
+      setProductData((prevData) => ({
+        ...prevData,
+        [name]: selectedValue, // Update with the number ID
+      }));
+    } else {
+      // Otherwise, for fields like price, name, description, etc.
+      setProductData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleCategoryChange = (e: SelectChangeEvent<string>) => {
-    setProductData((prevData) => ({
-      ...prevData,
-      category: e.target.value,
-    }));
+    const selectedCategory = categories.find(
+      (category) => category.name === e.target.value
+    );
+    if (selectedCategory) {
+      setProductData((prevData) => ({
+        ...prevData,
+        categoryId: selectedCategory.id, // Store the categoryId
+      }));
+    }
+  };
+
+  const handleBrandChange = (e: SelectChangeEvent<string>) => {
+    const selectedBrand = brands.find((brand) => brand.name === e.target.value);
+    if (selectedBrand) {
+      setProductData((prevData) => ({
+        ...prevData,
+        brand: selectedBrand.id, // Store the brandId
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Product data:', productData);
-    // Add your submit logic here, like an API call to save the product
+    const payload: UpdateProductDto = {
+      id: parsedProduct?.productId,
+      name: productData?.name,
+      brand: productData.brand,
+      description: productData.description,
+      image: productData.image,
+      discount: parseInt(productData?.discount?.toString()),
+      price: parseInt(productData?.price?.toString()),
+      tax: 0,
+      categoryId: productData?.categoryId,
+    };
+    dispatch(
+      updateProductHanlder({
+        product: payload,
+        callback: () => {
+          setIsOpen(true);
+        },
+      })
+    );
   };
+
+  const selectedBrand = brands?.find((x) => x?.id === productData?.brand);
+
+  const selectedCate = categories?.find(
+    (x) => x?.id === productData?.categoryId
+  );
 
   return (
     <Box
@@ -58,7 +135,6 @@ const UpdateProductPage = () => {
       justifyContent="center"
       sx={{ p: 3, mx: 'auto', bgcolor: '#fff' }}
     >
-      {/* Go Back Button */}
       <Box
         display="flex"
         alignItems="center"
@@ -69,7 +145,7 @@ const UpdateProductPage = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h5" ml={2}>
-          Cập nhật sản phẩm
+          Thêm mới sản phẩm
         </Typography>
         <Box width={10}></Box>
       </Box>
@@ -86,17 +162,17 @@ const UpdateProductPage = () => {
         />
 
         <FormControl fullWidth margin="normal">
-          <InputLabel>Thương hiệu</InputLabel>
+          <InputLabel>Danh mục</InputLabel>
           <Select
             label="Loại sản phẩm"
             name="category"
-            value={productData.category}
+            value={selectedCate?.name}
             onChange={handleCategoryChange}
             required
           >
             {categories.map((category) => (
-              <MenuItem key={category} value={category}>
-                {category}
+              <MenuItem key={category.id} value={category.name}>
+                {category.name}
               </MenuItem>
             ))}
           </Select>
@@ -107,13 +183,13 @@ const UpdateProductPage = () => {
           <Select
             label="Thương hiệu"
             name="brand"
-            value={productData.category}
-            onChange={handleCategoryChange}
+            value={selectedBrand?.name}
+            onChange={handleBrandChange}
             required
           >
-            {categories.map((category) => (
-              <MenuItem key={category} value={category}>
-                {category}
+            {brands.map((brand) => (
+              <MenuItem key={brand.id} value={brand.name}>
+                {brand.name}
               </MenuItem>
             ))}
           </Select>
@@ -123,7 +199,7 @@ const UpdateProductPage = () => {
           fullWidth
           label="Giá"
           name="price"
-          value={productData.inventory}
+          value={productData.price}
           onChange={handleInputChange}
           margin="normal"
           required
@@ -132,26 +208,17 @@ const UpdateProductPage = () => {
           fullWidth
           label="Khuyến mãi"
           name="discount"
-          value={productData.price}
+          value={productData.discount}
           onChange={handleInputChange}
           margin="normal"
           required
         />
-        {/* <TextField
-          fullWidth
-          label="Màu"
-          name="color"
-          value={productData.color}
-          onChange={handleInputChange}
-          margin="normal"
-          required
-        /> */}
 
         <TextField
           fullWidth
           label="Link hình"
           name="image"
-          value={productData.color}
+          value={productData.image}
           onChange={handleInputChange}
           margin="normal"
           required
@@ -161,7 +228,7 @@ const UpdateProductPage = () => {
           fullWidth
           label="Mô tả"
           name="description"
-          value={productData.rating}
+          value={productData.description}
           onChange={handleInputChange}
           margin="normal"
           required
@@ -173,11 +240,21 @@ const UpdateProductPage = () => {
           fullWidth
           sx={{ mt: 2 }}
         >
-          Cập nhật
+          Cập nhật sản phẩm
         </Button>
       </form>
+      <Snackbar
+        open={isOpen}
+        autoHideDuration={2000}
+        onClose={() => setIsOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setIsOpen(false)} severity="success">
+          {'Cập nhật thành công'}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
 
-export default UpdateProductPage;
+export default UpdateProduct;

@@ -77,10 +77,14 @@ export default function OrderPage() {
             }}
           >
             <TextComponent
+              title="Mã Khách hàng"
+              value={`CUSTM0${order?.customerId}`}
+            />
+            <TextComponent title="Mã đơn hàng" value={`ORDER0${order?.id}`} />
+            <TextComponent
               title="Ngày đặt"
               value={moment(order?.createdDate).format('DD-MM-YYYY')}
             />
-            <TextComponent title="Mã đơn hàng" value={`ORDER0${order?.id}`} />
             <TextComponent
               title="Tổng đơn"
               value={`đ${formatPrice(order?.totalPrice || 0)}`}

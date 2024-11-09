@@ -14,10 +14,10 @@ interface ActionType {
   payload: any;
 }
 
-const fetchOrdersApi = async (customerId: number) => {
+const fetchOrdersApi = async () => {
   const token = localStorage.getItem('token');
   const response = await axios.get(
-    `http://127.0.0.1:3005/pos/orders/get-by-customer/${customerId}`,
+    `http://127.0.0.1:3004/order/get-order/all`,
     {
       headers: {
         Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
@@ -28,9 +28,9 @@ const fetchOrdersApi = async (customerId: number) => {
   return response.data; // Assuming data contains the product list
 };
 
-function* getOrdersSaga(action: ActionType): Generator<any, void, DataType> {
+function* getOrdersSaga(): Generator<any, void, DataType> {
   try {
-    const rs = yield call(fetchOrdersApi, action?.payload);
+    const rs = yield call(fetchOrdersApi);
     if (rs?.status === 200) {
       yield put(getOrderListSuccess(rs?.data));
     } else {
