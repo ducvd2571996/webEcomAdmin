@@ -8,6 +8,7 @@ export interface Product {
   description: string;
   discount: number;
   brand: number;
+  salecount: number;
 }
 
 export interface AddProductDto {

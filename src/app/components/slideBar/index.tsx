@@ -28,6 +28,12 @@ const Sidebar = () => {
       }}
     >
       <List>
+        <ListItem onClick={() => router.push('/analyze')}>
+          <ListItemIcon>
+            <InventoryIcon sx={{ color: 'white' }} />
+          </ListItemIcon>
+          <ListItemText sx={{ color: 'white' }} primary="Thống kê" />
+        </ListItem>
         <ListItem onClick={() => router.push('/')}>
           <ListItemIcon>
             <InventoryIcon sx={{ color: 'white' }} />

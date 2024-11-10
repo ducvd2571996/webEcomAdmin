@@ -79,8 +79,6 @@ export default function LoginPage() {
         height: '100vh',
       }}
     >
-      {/* Left Banner */}
-
       <Image
         src={LoginBanner}
         alt="Adidas Men Running Sneakers"
